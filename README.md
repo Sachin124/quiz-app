@@ -31,7 +31,9 @@ A RESTful API-based Quiz Application that allows users to:
 ### **Pre-requisites**
 1. Install **Node.js** (v14 or above) and **npm**.
    - [Download Node.js](https://nodejs.org)
-2. Install **Docker** (for containerized deployment).
+2. Install dependencies: **Docker** (for containerized deployment).
+3. Build Docker Imagedocker build -t quiz-app ..
+4. Run Container docker run -p 3000:3000 quiz-app
 
 ---
 
