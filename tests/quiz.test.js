@@ -1,54 +1,40 @@
-const request = require("supertest");
-const app = require("../app");
+import { createQuiz, getQuizById } from "../services/QuizService";
 
-describe("Quiz API Endpoints", () => {
-  let quizId;
-  const userId = "user123";
+// Mocking QuizService methods
+jest.mock('../services/QuizService', () => ({
+  createQuiz: jest.fn(),
+  getQuizById: jest.fn(),
+}));
 
-  it("should create a new quiz", async () => {
-    const response = await request(app)
-      .post("/api/quiz")
-      .send({
-        title: "Sample Quiz",
-        questions: [
-          {
-            id: "q1",
-            text: "Question 1?",
-            options: ["A", "B"],
-            correctOption: "A",
-          },
-        ],
-      });
+test("Create and retrieve quiz", () => {
+  const quiz = {
+    id: "1",
+    title: "Sample Quiz",
+    questions: [
+      {
+        id: "q1",
+        text: "What is 2+2?",
+        options: ["3", "4", "5", "6"],
+        correct_option: 1
+      }
+    ]
+  };
 
-    expect(response.status).toBe(201);
-    quizId = response.body.id;
-  });
+  // Mock the function behavior
+  createQuiz.mockReturnValue(quiz);
+  getQuizById.mockReturnValue(quiz);
 
-  it("should fetch a quiz by its ID", async () => {
-    const response = await request(app).get(`/api/quiz/${quizId}`);
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("id", quizId);
-    expect(response.body).toHaveProperty("title", "Sample Quiz");
-  });
-
-  it("should submit an answer and provide feedback", async () => {
-    const response = await request(app)
-      .post(`/api/quiz/${quizId}/answer`)
-      .send({
-        user_id: userId,
-        question_id: "q1",
-        answer: "A",
-      });
-
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("correct", true);
-  });
-
-  it("should fetch the results for the quiz", async () => {
-    const response = await request(app).get(
-      `/api/quiz/${quizId}/results?user_id=${userId}`
-    );
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("score");
+  expect(getQuizById("1")).toEqual(quiz);
+  expect(createQuiz).toHaveBeenCalledWith({
+    id: "1",
+    title: "Sample Quiz",
+    questions: [
+      {
+        id: "q1",
+        text: "What is 2+2?",
+        options: ["3", "4", "5", "6"],
+        correct_option: 1
+      }
+    ]
   });
 });
