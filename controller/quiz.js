@@ -1,4 +1,4 @@
-const { quizzes } = require("../data/data");
+const { quizzes, results } = require("../data/data");
 const { Quiz, Question } = require("../models/model");
 const { v4: uuidv4 } = require("uuid");
 
@@ -27,13 +27,11 @@ const getQuizById = (req, res)=>{
         res.status(404).send("Quiz not found!");
     }
 
-    const filterQuiz = {...quiz, questions: quiz.questions.map(({id, text, options})=>({id, text, options}))};
+    const filterQuiz = {...quiz, questions: quiz?.questions.map(({id, text, options})=>({id, text, options}))};
 
     res.status(200).send(filterQuiz)
 }
 
-
-// Submit an answer
 const submitAnswer = (req, res) => {
     const { quizId } = req.params;
     const { questionId, selectedOption } = req.body;
@@ -53,7 +51,6 @@ const submitAnswer = (req, res) => {
     res.json({ isCorrect, correctOption: `Correct Option is ${question.correctOption}` });
   };
   
-  // Get user results for a quiz
   const getResults = (req, res) => {
     const { quizId } = req.params;
     const userResult = results.find((r) => r.quizId === quizId);
